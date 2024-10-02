@@ -34,7 +34,7 @@ def main():
     faceid_embeds = torch.from_numpy(faces[0].normed_embedding).unsqueeze(0)
 
     base_model_path = "SG161222/RealVisXL_V3.0"
-    ip_ckpt = "../checkpoints/ip-adapter-faceid_sdxl.bin"
+    ip_ckpt = "../checkpoints/human/ip-adapter-faceid_sdxl.bin"
     device = "cuda"
 
     noise_scheduler = DDIMScheduler(
