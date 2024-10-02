@@ -98,7 +98,7 @@ The prompt must contain one of the following cameras:
 
 # Metahuman Wearing Safety Equipment
 
-This project leverages the [IP-Adapter](https://github.com/tencent-ailab/IP-Adapter) from Tencent AI Lab to generate images of metahumans wearing safety equipment based on a given input image and text prompt.
+This project generates images of metahumans wearing safety equipment based on a given input image and text prompt.
 
 
 ## Installation
