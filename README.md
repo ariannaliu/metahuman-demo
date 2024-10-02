@@ -5,17 +5,11 @@ This project leverages the [IP-Adapter](https://github.com/tencent-ailab/IP-Adap
 
 ## Table of Contents
 
-- [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Examples](#examples)
 - [Acknowledgements](#acknowledgements)
 
-## Features
-
-- Generate high-quality images of metahumans with specified attributes.
-- Utilize advanced diffusion models for image synthesis.
-- Easily customizable with different prompts and input images.
 
 ## Installation
 
@@ -28,58 +22,48 @@ This project leverages the [IP-Adapter](https://github.com/tencent-ailab/IP-Adap
 
 1. **Clone the Repository**
 
-   \`\`\`bash
+   ```bash
    git clone https://github.com/your_username/your_repository.git
    cd your_repository
-   \`\`\`
+   ```
 
 2. **Create a Conda Environment**
 
-   \`\`\`bash
+   ```bash
    conda create -n ip python=3.10
    conda activate ip
-   \`\`\`
+   ```
 
 3. **Install Required Packages**
 
-   \`\`\`bash
+   ```bash
    pip install diffusers==0.22.1 accelerate transformers safetensors datasets numpy scipy insightface
    pip install git+https://github.com/tencent-ailab/IP-Adapter.git
    pip install onnxruntime einops
-   \`\`\`
+   ```
 
 ## Usage
 
 To generate an image of a metahuman wearing safety equipment, run the following command:
 
-\`\`\`bash
+```bash
 python3 demo.py --image_path "1.png" --prompt "a man wearing yellow working uniform"
-\`\`\`
+```
 
-- \`--image_path\`: Path to the input image.
-- \`--prompt\`: Text prompt describing the desired output.
-
-### Example
-
-\`\`\`bash
-python3 demo.py --image_path "input_images/person.png" --prompt "a woman wearing a red safety helmet and safety goggles"
-\`\`\`
+- `--image_path`: Path to the input image.
+- `--prompt`: Text prompt describing the desired output.
 
 ## Examples
 
-### Input Image
+| Text Prompt                                       | Image 1                                                   | Image 2                                                   |
+|---------------------------------------------------|------------------------------------------------------------|------------------------------------------------------------|
+| A man wearing yellow working uniform              | <img src="media/man1.jpg" width="200"/>                     | <img src="media/gen2.png" width="200"/>                     |
+| A man with a blue safety vest and goggles         | <img src="media/man1.jpg" width="200"/>                     | <img src="media/gen3.png" width="200"/>                     |
+| The backview of a man wearing yellow working uniform | <img src="media/man2.jpg" width="200"/>                     | <img src="media/gen1.png" width="200"/>                     |
+| A man with a blue safety vest and goggles | <img src="media/man3.jpg" width="200"/>                     | <img src="media/gen4.png" width="200"/>                     |
 
-![Input Image](input_images/person.png)
-
-### Generated Image
-
-![Generated Image](output_images/generated_person.png)
 
 ## Acknowledgements
 
 - [IP-Adapter by Tencent AI Lab](https://github.com/tencent-ailab/IP-Adapter)
 - [Diffusers Library by Hugging Face](https://github.com/huggingface/diffusers)
-
----
-
-Feel free to customize this README to better suit your project's specifics.
