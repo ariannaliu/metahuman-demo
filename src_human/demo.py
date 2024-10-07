@@ -57,10 +57,11 @@ def main():
     ip_model = IPAdapterFaceIDXL(pipe, ip_ckpt, device)
 
     # generate image
-    negative_prompt = "monochrome, lowres, bad anatomy, worst quality, low quality, blurry"
+    negative_prompt = "hands, arms, mask, monochrome, lowres, bad anatomy, worst quality, low quality, blurry"
 
     images = ip_model.generate(
-        prompt= "headshot of "+prompt, negative_prompt=negative_prompt, faceid_embeds=faceid_embeds, num_samples=1,
+        prompt= "a full face photo of "+prompt+",above neck, close up photo, with a clean background, good looking", negative_prompt=negative_prompt, faceid_embeds=faceid_embeds, num_samples=1,
+        # prompt= "a close up photo of "+prompt+",above neck", negative_prompt=negative_prompt, faceid_embeds=faceid_embeds, num_samples=1,
         width=1024, height=1024,
         num_inference_steps=30, guidance_scale=7.5
     )
@@ -77,7 +78,7 @@ def main():
 
     # resized_image = headshot.resize((384, 384), Image.LANCZOS)
     # resized_image = headshot.resize((256, 256), Image.LANCZOS)
-    resized_image = headshot.resize((256, 256), Image.LANCZOS)
+    resized_image = headshot.resize((189, 189), Image.LANCZOS)
 
     # Create a new canvas of size (1024, 768) with a white background
     canvas_size = (768, 1024)
@@ -151,7 +152,7 @@ def main():
         # image=[openpose_image],
         guidance_scale=4.5,
         num_inference_steps=25,
-        controlnet_conditioning_scale=[0.0, 1.5],
+        controlnet_conditioning_scale=[1.5, 1.5],
         control_guidance_start=[0.0,0.0],
         control_guidance_end=[1.0, 1.0]
     ).images[0]
