@@ -34,7 +34,7 @@ def main():
     faceid_embeds = torch.from_numpy(faces[0].normed_embedding).unsqueeze(0)
 
     base_model_path = "SG161222/RealVisXL_V3.0"
-    ip_ckpt = "../checkpoints/human/ip-adapter-faceid_sdxl.bin"
+    ip_ckpt = "/scratch/zhixuan2/creativeAI/ipadapter/ip-adapter-faceid_sdxl.bin"
     device = "cuda"
 
     noise_scheduler = DDIMScheduler(
@@ -60,7 +60,7 @@ def main():
     negative_prompt = "monochrome, lowres, bad anatomy, worst quality, low quality, blurry"
 
     images = ip_model.generate(
-        prompt=prompt, negative_prompt=negative_prompt, faceid_embeds=faceid_embeds, num_samples=1,
+        prompt= "headshot of "+prompt, negative_prompt=negative_prompt, faceid_embeds=faceid_embeds, num_samples=1,
         width=1024, height=1024,
         num_inference_steps=30, guidance_scale=7.5
     )
@@ -75,7 +75,9 @@ def main():
 
     ################# Make Canvas #################
 
-    resized_image = headshot.resize((384, 384), Image.LANCZOS)
+    # resized_image = headshot.resize((384, 384), Image.LANCZOS)
+    # resized_image = headshot.resize((256, 256), Image.LANCZOS)
+    resized_image = headshot.resize((256, 256), Image.LANCZOS)
 
     # Create a new canvas of size (1024, 768) with a white background
     canvas_size = (768, 1024)
@@ -83,7 +85,7 @@ def main():
 
     # Calculate the position to paste the resized image (upper center)
     x_offset = (canvas_size[0] - resized_image.width) // 2
-    y_offset = 0  # Upper center position
+    y_offset = 64  # Upper center position
 
     # Paste the resized image onto the canvas
     canvas.paste(resized_image, (x_offset, y_offset))
@@ -100,25 +102,61 @@ def main():
     ################# ControlNet #################
 
     vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16).to("cuda")
-    controlnet = ControlNetModel.from_pretrained("destitech/controlnet-inpaint-dreamer-sdxl", torch_dtype=torch.float16, variant="fp16")
+
+
+    # controlnet = ControlNetModel.from_pretrained("destitech/controlnet-inpaint-dreamer-sdxl", torch_dtype=torch.float16, variant="fp16")
+    # pipeline = StableDiffusionXLControlNetPipeline.from_pretrained(
+    #     "SG161222/RealVisXL_V4.0", torch_dtype=torch.float16, variant="fp16", controlnet=controlnet, vae=vae
+    # ).to("cuda")
+
+    # prompt = "a full body image of "+ prompt + " with a clean background, good looking, high quality, high resolution"
+    # image = pipeline(
+    #         prompt,
+    #         height=1024,
+    #         width=768,
+    #         negative_prompt=negative_prompt,
+    #         image=canvas,
+    #         guidance_scale=4.5,
+    #         num_inference_steps=25,
+    #         controlnet_conditioning_scale=1.5,
+    #         control_guidance_end=1.0,
+    #     ).images[0]
+
+    # image.save("metahuman_output.png")
+
+
+
+    controlnets = [
+        ControlNetModel.from_pretrained(
+            "destitech/controlnet-inpaint-dreamer-sdxl", torch_dtype=torch.float16, variant="fp16"
+        ),
+        ControlNetModel.from_pretrained(
+            "thibaud/controlnet-openpose-sdxl-1.0", torch_dtype=torch.float16
+        ),
+    ]
     pipeline = StableDiffusionXLControlNetPipeline.from_pretrained(
-        "SG161222/RealVisXL_V4.0", torch_dtype=torch.float16, variant="fp16", controlnet=controlnet, vae=vae
+        "SG161222/RealVisXL_V4.0", torch_dtype=torch.float16, variant="fp16", controlnet=controlnets, vae=vae
     ).to("cuda")
+    prompt = "a full body image of "+ prompt + " with a clean background, good looking, high quality, high resolution"
 
-    prompt = prompt + " with a clean background, good looking, high quality, high resolution"
+    # Resize the openpose image to match the canvas dimensions
+    openpose_image = Image.open("human_id/tpose_01.png")
+    openpose_image = openpose_image.resize((768, 1024), Image.LANCZOS)
+    print(canvas.size)
+
     image = pipeline(
-            prompt,
-            height=1024,
-            width=768,
-            negative_prompt=negative_prompt,
-            image=canvas,
-            guidance_scale=4.5,
-            num_inference_steps=25,
-            controlnet_conditioning_scale=1.5,
-            control_guidance_end=1.0,
-        ).images[0]
-
+        prompt,
+        negative_prompt=negative_prompt,
+        image=[canvas, openpose_image],
+        # image=[openpose_image],
+        guidance_scale=4.5,
+        num_inference_steps=25,
+        controlnet_conditioning_scale=[0.0, 1.5],
+        control_guidance_start=[0.0,0.0],
+        control_guidance_end=[1.0, 1.0]
+    ).images[0]
     image.save("metahuman_output.png")
+
 
 if __name__ == "__main__":
     main()
