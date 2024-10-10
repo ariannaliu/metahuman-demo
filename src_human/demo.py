@@ -147,6 +147,8 @@ def main():
 
     image = pipeline(
         prompt,
+        height=1024,
+        width=768,
         negative_prompt=negative_prompt,
         image=[canvas, openpose_image],
         # image=[openpose_image],
